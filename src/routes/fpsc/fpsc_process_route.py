@@ -1,7 +1,7 @@
-# app\routes\fpsc\fpsc_process_route.py
+# src\routes\fpsc\fpsc_process_route.py
 
 from flask import Blueprint, jsonify
-from app.services.fpsc.fpsc_process_service import process_json_and_insert_data_from_filename
+from src.services.fpsc.fpsc_process_service import process_json_and_insert_data_from_filename
 
 # Define Blueprint
 fspc_process_bp = Blueprint('fspc_process_bp', __name__)

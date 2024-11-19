@@ -1,10 +1,10 @@
-# app\services\fpsc\fpsc_process_service.py
+# src\services\fpsc\fpsc_process_service.py
 
 import os
 import json
 import pdfplumber
-from app.models.fpsc_pod_model import FpscPOD
-from app.extensions import db
+from src.models.fpsc_pod_model import FpscPOD
+from src.extensions import db
 from sqlalchemy.exc import IntegrityError
 
 def safe_convert(value, value_type):

@@ -1,5 +1,7 @@
+# app.py
+
 from flask import Flask
-from app.routes import register_blueprints
+from src.routes import register_blueprints
 
 # Initialize Flask app
 app = Flask(__name__)

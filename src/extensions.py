@@ -1,4 +1,4 @@
-# app\extensions.py
+# src\extensions.py
 
 from flask_sqlalchemy import SQLAlchemy
 

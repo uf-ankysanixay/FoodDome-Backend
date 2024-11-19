@@ -1,8 +1,8 @@
-# app\routes\fpsc\fpsc_upload_route.py
+# src\routes\fpsc\fpsc_upload_route.py
 
 import os
 from flask import Blueprint, jsonify, request
-from app.services.fpsc.fpsc_upload_service import handle_upload
+from src.services.fpsc.fpsc_upload_service import handle_upload
 
 # Define Blueprint
 fpsc_upload_bp = Blueprint('fpsc_upload_bp', __name__)

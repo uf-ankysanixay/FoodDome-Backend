@@ -1,9 +1,9 @@
-# app\services\fpsc\fpsc_upload_service.py
+# src\services\fpsc\fpsc_upload_service.py
 
 import os
 import json
 from werkzeug.utils import secure_filename
-from app.services.fpsc.fpsc_process_service import process_pod
+from src.services.fpsc.fpsc_process_service import process_pod
 
 ALLOWED_EXTENSIONS = {'pdf'}
 

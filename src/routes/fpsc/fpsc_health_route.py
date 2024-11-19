@@ -1,4 +1,4 @@
-# app\routes\fpsc\fpsc_health_route.py
+# src\routes\fpsc\fpsc_health_route.py
 
 from flask import Blueprint, jsonify
 

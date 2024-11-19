@@ -1,6 +1,8 @@
+# src\routes\home\home_routes.py
+
 from flask import Blueprint, jsonify
 from sqlalchemy import text
-from app.config import engine
+from src.config import engine
 
 home_bp = Blueprint('home', __name__)
 

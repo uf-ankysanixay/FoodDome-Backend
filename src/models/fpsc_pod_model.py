@@ -1,6 +1,6 @@
-# app\models\fpsc_pod_model.py
+# src\models\fpsc_pod_model.py
 
-from app.extensions import db
+from src.extensions import db
 
 class FpscPOD(db.Model):
     __tablename__ = 'fpsc_pod'
