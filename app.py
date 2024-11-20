@@ -1,22 +1,17 @@
-# app.py
-
 from flask import Flask
 from flask_cors import CORS
-from dotenv import load_dotenv
 from src.routes import register_blueprints
 from src.extensions import db  # Import SQLAlchemy
+from src.config import connection_string  # Import constructed connection string
 
 import os
-
-# Load environment variables
-load_dotenv()
 
 def create_app():
     # Initialize Flask app
     app = Flask(__name__)
 
     # Configure app settings
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI', 'sqlite:///example.db')  # Update this with your database URI
+    app.config['SQLALCHEMY_DATABASE_URI'] = connection_string  # Use the constructed connection string
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Configure CORS
@@ -33,6 +28,12 @@ def create_app():
 
 # Create and expose the app instance for Gunicorn
 app = create_app()
+
+# Create tables in development (if needed)
+if not os.getenv("WEBSITE_ENVIRONMENT"):  # Only run locally
+    with app.app_context():
+        db.create_all()
+        print("Database tables created successfully!")
 
 if __name__ == '__main__':
     app.run(debug=True)
