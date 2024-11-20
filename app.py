@@ -1,3 +1,5 @@
+# app.py
+
 from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -29,6 +31,8 @@ def create_app():
 
     return app
 
+# Create and expose the app instance for Gunicorn
+app = create_app()
+
 if __name__ == '__main__':
-    app = create_app()
     app.run(debug=True)

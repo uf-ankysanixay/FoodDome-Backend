@@ -6,8 +6,7 @@ FoodDome-Backend
 ├── app.py
 ├── data
 │   └── fpsc
-│       ├── Ian_10-04-22_0900_PM.json
-│       └── Ian_10-04-22_0900_PM.pdf
+├── instance
 ├── requirements.txt
 ├── src
 │   ├── __init__.py
@@ -26,10 +25,11 @@ FoodDome-Backend
 │   │   └── home
 │   │       └── home_routes.py
 │   └── services
-│       └── fpsc
-│           ├── __init__.py
-│           ├── fpsc_process_service.py
-│           └── fpsc_upload_service.py
+│       ├── fpsc
+│       │   ├── __init__.py
+│       │   ├── fpsc_process_service.py
+│       │   └── fpsc_upload_service.py
+│       └── home
 ├── start.ps1
 ├── utils
 │   ├── addHeaders.py
