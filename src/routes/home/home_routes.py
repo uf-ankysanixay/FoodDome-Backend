@@ -3,23 +3,13 @@
 from flask import Blueprint, jsonify
 from sqlalchemy import text
 from src.config import engine
+import os
 
 home_bp = Blueprint('home', __name__)
 
 @home_bp.route('/')
 def home():
     return jsonify({"message": "Welcome to Project Food Dome!"})
-
-@home_bp.route('/db-test', methods=['GET'])
-def db_test():
-    try:
-        with engine.connect() as connection:
-            # Use SQLAlchemy's `text` for the raw query
-            result = connection.execute(text("SELECT 'Connection successful!' AS message"))
-            row = result.fetchone()
-            return jsonify({"message": row[0]})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 @home_bp.route('/health', methods=['GET'])
 def health_check():
@@ -31,12 +21,25 @@ def health_check():
     except Exception as e:
         db_status = f"Error: {str(e)}"
 
+    # Fetch environment variables
+    environment = os.getenv("ENVIRONMENT", "Development")
+    db_server = os.getenv("DB_SERVER", "Unknown")
+    db_name = os.getenv("DB_NAME", "Unknown")
+    db_user = os.getenv("DB_USER", "Unknown")
+    db_driver = os.getenv("DB_DRIVER", "Unknown")
+
     health_details = {
         "app_name": "Project Food Dome",
         "version": "1.0.0",
         "status": "Running",
-        "database": db_status,
-        "environment": "Production" if db_status == "Operational" else "Development"
+        "database": {
+            "status": db_status,
+            "server": db_server,
+            "name": db_name,
+            "user": db_user,
+            "driver": db_driver
+        },
+        "environment": environment
     }
 
     return jsonify(health_details), 200
