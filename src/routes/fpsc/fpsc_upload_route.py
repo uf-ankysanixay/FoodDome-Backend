@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 from src.services.fpsc.fpsc_upload_service import handle_upload, insert_data_from_json
-from src.database import db  # Import SQLAlchemy database session
+from src.extensions import db  # Import SQLAlchemy database session
 
 # Define Blueprint
 fpsc_upload_bp = Blueprint('fpsc_upload_bp', __name__)

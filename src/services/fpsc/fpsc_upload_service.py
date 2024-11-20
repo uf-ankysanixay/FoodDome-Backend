@@ -2,8 +2,8 @@ import os
 import json
 from werkzeug.utils import secure_filename
 from sqlalchemy.exc import IntegrityError
-from src.database.models import FpscPOD  # Import your database model
-from src.database import db  # Import SQLAlchemy database session
+from src.models.fpsc_pod_model import FpscPOD  # Import your database model
+from src.extensions import db  # Import SQLAlchemy database session
 from src.services.fpsc.fpsc_process_service import process_pod
 
 ALLOWED_EXTENSIONS = {'pdf'}
