@@ -1,12 +1,13 @@
 import os
 from flask import Blueprint, jsonify, request
 from datetime import datetime
-from src.services.fpsc.fpsc_upload_service import handle_upload
+from sqlalchemy.exc import IntegrityError
+from src.services.fpsc.fpsc_upload_service import handle_upload, insert_data_from_json
+from src.database import db  # Import SQLAlchemy database session
 
 # Define Blueprint
 fpsc_upload_bp = Blueprint('fpsc_upload_bp', __name__)
 
-# Route to upload and process PDFs
 @fpsc_upload_bp.route('/upload-pdfs', methods=['POST'])
 def upload_pdfs():
     try:
@@ -42,13 +43,22 @@ def upload_pdfs():
                 # Process each file
                 result, status = handle_upload(file, upload_folder)
 
-                # Log each upload
+                # Insert the JSON data into the database
+                db_result = insert_data_from_json(result["data"])
+
+                # Log each upload and database insertion result
                 with open(log_file_path, 'a') as log_file:
                     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     log_file.write(f"{timestamp} - Uploaded file: {file.filename}\n")
+                    log_file.write(f"{timestamp} - DB Insertion: {db_result['message']}\n")
 
-                # Add the result to the list
-                results.append(result)
+                # Add the result and database insertion message to the response
+                results.append({
+                    "file": file.filename,
+                    "upload_message": result["message"],
+                    "db_message": db_result["message"],
+                    "skipped_rows": db_result["skipped_rows"]
+                })
 
                 # Save the JSON response for the first file
                 if i == 0:

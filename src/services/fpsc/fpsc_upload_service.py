@@ -1,15 +1,71 @@
 import os
 import json
 from werkzeug.utils import secure_filename
+from sqlalchemy.exc import IntegrityError
+from src.database.models import FpscPOD  # Import your database model
+from src.database import db  # Import SQLAlchemy database session
 from src.services.fpsc.fpsc_process_service import process_pod
 
 ALLOWED_EXTENSIONS = {'pdf'}
 MAX_FILE_SIZE_MB = 10  # Define a maximum file size limit (optional)
 
+
 def allowed_file(filename):
+    """Check if the file extension is allowed."""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def handle_upload(file, upload_folder):  # Accepts both file and upload_folder
+
+def insert_data_from_json(data):
+    """Inserts data into FpscPOD table and tracks skipped entries due to duplicates."""
+    skipped_rows = []  # Initialize the list to capture skipped rows
+
+    try:
+        for entry in data:
+            pod_entry = FpscPOD(
+                storm_id=entry.get("storm_id"),
+                county=entry.get("county"),
+                fpl_accounts=entry.get("fpl_accounts"),
+                fpl_out=entry.get("fpl_out"),
+                fpl_percentage=entry.get("fpl_percentage"),
+                duke_accounts=entry.get("duke_accounts"),
+                duke_out=entry.get("duke_out"),
+                duke_percentage=entry.get("duke_percentage"),
+                tampa_accounts=entry.get("tampa_accounts"),
+                tampa_out=entry.get("tampa_out"),
+                tampa_percentage=entry.get("tampa_percentage"),
+                fpu_accounts=entry.get("fpu_accounts"),
+                fpu_out=entry.get("fpu_out"),
+                fpu_percentage=entry.get("fpu_percentage"),
+                cooperatives_accounts=entry.get("cooperatives_accounts"),
+                cooperatives_out=entry.get("cooperatives_out"),
+                cooperatives_percentage=entry.get("cooperatives_percentage"),
+                municipals_accounts=entry.get("municipals_accounts"),
+                municipals_out=entry.get("municipals_out"),
+                municipals_percentage=entry.get("municipals_percentage")
+            )
+
+            try:
+                db.session.add(pod_entry)
+                db.session.flush()  # Flush to check for duplicates
+            except IntegrityError:
+                db.session.rollback()  # Rollback to avoid partial inserts
+                skipped_rows.append(entry)  # Log the skipped entry
+                continue
+
+        db.session.commit()
+        return {
+            "message": f"Data inserted successfully. {len(skipped_rows)} duplicates skipped.",
+            "skipped_rows": skipped_rows,
+            "data": data
+        }
+
+    except Exception as e:
+        db.session.rollback()
+        raise Exception(f"Error inserting data into the database: {str(e)}")
+
+
+def handle_upload(file, upload_folder):
+    """Handles file upload and processing."""
     try:
         # Validate file type
         if not file or not allowed_file(file.filename):
