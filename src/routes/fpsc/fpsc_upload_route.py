@@ -2,35 +2,60 @@
 
 import os
 from flask import Blueprint, jsonify, request
+from datetime import datetime
 from src.services.fpsc.fpsc_upload_service import handle_upload
 
 # Define Blueprint
 fpsc_upload_bp = Blueprint('fpsc_upload_bp', __name__)
 
-# Route to upload and process PDF
+# Route to upload and process PDFs
 @fpsc_upload_bp.route('/upload-pdfs', methods=['POST'])
-def upload_pdf():
-    # Check if the file part exists in the request
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
-    
-    file = request.files['file']
-    
-    # Check if a file is selected
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
+def upload_pdfs():
+    # Check if the request has files
+    if 'files' not in request.files:
+        return jsonify({"error": "No files part in the request"}), 400
+
+    files = request.files.getlist('files')  # Get all files from the request
+    if not files or all(file.filename == '' for file in files):
+        return jsonify({"error": "No files selected for upload"}), 400
 
     try:
         # Ensure the directory for /data/fpsc exists
         upload_folder = os.path.join(os.getcwd(), 'data', 'fpsc')
         os.makedirs(upload_folder, exist_ok=True)
 
-        # Call the service to handle the upload and return the result (including the JSON data)
-        result = handle_upload(file, upload_folder)  # Pass both the file and the upload folder
+        # Define the log file path
+        log_file_path = os.path.join(upload_folder, 'upload_log.txt')
 
-        # If the file was uploaded and the JSON was created successfully, return the result
-        return jsonify(result), 200  # Return the result which includes the JSON data
+        results = []
+        json_response = None  # Store the JSON response for the first file
+
+        for i, file in enumerate(files):
+            try:
+                # Process each file
+                result, status = handle_upload(file, upload_folder)
+
+                # Log each upload
+                with open(log_file_path, 'a') as log_file:
+                    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    log_file.write(f"{timestamp} - Uploaded file: {file.filename}\n")
+
+                # Add the result to the list
+                results.append(result)
+
+                # Save the JSON response for the first file
+                if i == 0:
+                    json_response = result
+
+            except Exception as e:
+                results.append({"file": file.filename, "error": str(e)})
+
+        # Return JSON for the first file and a summary of all uploads
+        return jsonify({
+            "message": "Files processed successfully",
+            "json": json_response,
+            "upload_summary": results
+        }), 200
 
     except Exception as e:
-        # Return an error message if something goes wrong
         return jsonify({"error": str(e)}), 500

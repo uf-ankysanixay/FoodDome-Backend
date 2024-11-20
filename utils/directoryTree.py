@@ -5,7 +5,7 @@ import os
 # Define the project root, output file, and directories to skip
 project_root = r"D:\Projects\FoodDome\FoodDome-Backend"
 output_file = os.path.join(project_root, "utils", "tree.txt")
-skip_dirs = {'.venv', 'venv', 'node_modules', '.pytest_cache', '__pycache__'}
+skip_dirs = {'.venv', 'venv', 'node_modules', '.pytest_cache', '__pycache__', '.git'}
 
 def generate_tree(directory, prefix=""):
     lines = []
