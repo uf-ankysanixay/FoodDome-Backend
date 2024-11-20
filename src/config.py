@@ -23,12 +23,3 @@ DB_DRIVER = os.getenv("DB_DRIVER")
 
 # Construct the connection string
 connection_string = f"mssql+pyodbc://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}/{DB_NAME}?driver={DB_DRIVER}"
-
-# Debug environment variables (only in development)
-if not os.getenv("WEBSITE_ENVIRONMENT"):
-    print(f"DB_SERVER: {DB_SERVER}")
-    print(f"DB_NAME: {DB_NAME}")
-    print(f"DB_USER: {DB_USER}")
-    print(f"DB_PASSWORD: {'*' * len(DB_PASSWORD) if DB_PASSWORD else 'Not set'}")
-    print(f"DB_DRIVER: {DB_DRIVER}")
-    print(f"Connection string: {connection_string}")

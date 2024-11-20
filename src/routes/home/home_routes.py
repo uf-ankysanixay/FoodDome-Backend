@@ -2,7 +2,7 @@
 
 from flask import Blueprint, jsonify
 from sqlalchemy import text
-from src.config import engine
+from src.extensions import engine
 import os
 
 home_bp = Blueprint('home', __name__)
@@ -13,14 +13,6 @@ def home():
 
 @home_bp.route('/health', methods=['GET'])
 def health_check():
-    try:
-        # Check database connection
-        with engine.connect() as connection:
-            connection.execute(text("SELECT 1"))
-        db_status = "Operational"
-    except Exception as e:
-        db_status = f"Error: {str(e)}"
-
     # Fetch environment variables
     environment = os.getenv("ENVIRONMENT", "Development")
     db_server = os.getenv("DB_SERVER", "Unknown")
